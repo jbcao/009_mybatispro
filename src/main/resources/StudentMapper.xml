@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper:是整个文件的根节点，或者说大标签，用来开始和结束xml文件
+属性：
+   namespace:指定命名空间（相当于包名），用来区分不同的mapper.xml文件中相同的id属性
+             是自定义的，名字随便取
+-->
+<mapper namespace="cjb">
+    <!--
+    List<Student> getAll();完成查询全部学生的功能
+    测试类中通过id调用这条sql语句，id和方法名作用一样
+       resultType   :指定查询的结果集的类型,如果是集合，则必须是泛型的类型
+                     需要提供全部路径，才能通过反射创建这个类型的对象
+       parameterType:如果有参数，则通过他指定参数的类型
+    -->
+    <select id="getAll" resultType="student">
+        select id ,name,email,age from student
+    </select>
+    <!--按主键ID查询学生信息
+        Student getOrderById(Integer id
+        #{}就是参数占位符)-->
+    <select id="getById" parameterType="int" resultType="d_firstexample.pojo.Student">
+     select id ,name,email,age from student where id=#{id}
+    </select>
+    <!--按照学生名称模糊查询
+    List<Student> getByName(String name)-->
+    <select id="getByName" parameterType="string" resultType="d_firstexample.pojo.Student">
+        select id,name,email,age from student where name like '%${value}%'
+    </select>
+    <!--
+    增加学生
+    int insert(Student stu);
+    增删改没有返回值，他会自动将受影响的行数返回来
+    参数直接填类里面的属性就好了
+    -->
+    <insert id="insert" parameterType="d_firstexample.pojo.Student">
+    insert into student (name,email,age) values (#{name},#{email},#{age})
+    </insert>
+    <!--删除学生
+    int delete(Integer id)
+    -->
+    <delete id="delete" parameterType="int">
+        delete from student where id =#{id}
+    </delete>
+<!--修改学生
+int update(Student stu)
+-->
+    <update id="update" parameterType="d_firstexample.pojo.Student" >
+        update student set name=#{name} , email=#{email} , age=#{age}
+        where id=#{id}
+    </update>
+</mapper>

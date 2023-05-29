@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="e_dynamicproxy.mapper.UserMapper">
+    <select id="getAll" resultType="users">
+        select id ,username,birthday,sex,address from users
+    </select>
+    <select id="getById" parameterType="int" resultType="users">
+        select id ,username,birthday,sex,address
+        from users
+        where id=#{id}
+    </select>
+    <!--${}只有这一个地方使用-->
+    <select id="getByName" resultType="users" parameterType="string">
+        select id ,username,birthday,sex,address
+        from users
+        where username like '%${value}%'
+    </select>
+    <select id="getByNameGood" parameterType="string" resultType="users">
+        select id ,username,birthday,sex,address
+        from users
+        where username like concat('%',#{name},'%')
+    </select>
+    <select id="getByNameOrAddress" resultType="users">
+          select id ,username,birthday,sex,address
+        from users
+        where ${columnName} like concat('%',#{columnValue},'%')
+    </select>
+    <update id="update" parameterType="users">
+        update users set username = #{userName},birthday = #{birthday},sex= #{sex},address=#{address}
+        where id=#{id}
+    </update>
+    <insert id="insert" parameterType="users">
+        <selectKey order="AFTER" keyProperty="id" resultType="int">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into users (username,birthday,sex,address) values (#{userName},#{birthday},#{sex},#{address})
+    </insert>
+    <delete id="delete" parameterType="int">
+        delete from users where id =#{id}
+    </delete>
+
+
+</mapper>

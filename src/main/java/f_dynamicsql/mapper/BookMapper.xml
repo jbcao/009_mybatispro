@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="f_dynamicsql.mapper.BookMapper">
+    <resultMap id="bookMap" type="book">
+        <!--主键绑定-->
+        <id property="id" column="bookid"></id>
+        <!--非主键绑定-->
+        <result property="name" column="bookname"></result>
+    </resultMap>
+<select id="getAll" resultType="book">
+    select bookid id,bookname name from book
+</select>
+    <select id="getAll2" resultMap="bookMap">
+    select bookid ,bookname  from book
+  </select>
+</mapper>

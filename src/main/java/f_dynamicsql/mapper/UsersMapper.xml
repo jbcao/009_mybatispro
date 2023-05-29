@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="f_dynamicsql.mapper.UsersMapper">
+    <!--定义代码片段-->
+    <sql id="columns">
+        id, username, birthday, sex, address
+    </sql>
+
+    <select id="getAll" resultType="user">
+        select <include refid="columns"></include> from user
+    </select>
+    <select id="getById" parameterType="int" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        where id=#{id}
+    </select>
+    <!--${}只有这一个地方使用-->
+    <select id="getByName" resultType="user" parameterType="string">
+        select
+        <include refid="columns"></include>
+        from user
+        where username like '%${value}%'
+    </select>
+    <select id="getByNameGood" parameterType="string" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        where username like concat('%',#{name},'%')
+    </select>
+    <select id="getByNameOrAddress" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        where ${columnName} like concat('%',#{columnValue},'%')
+    </select>
+    <!--多条件查询
+    根据实体类中成员变量是否有值来决定是否添加条件
+    private Integer id;       null
+    private String userName;  null
+    private Date birthday;    null
+    private String sex;       null
+    private String address;   null
+    private int num;          0
+    private boolean flag;     false
+    private double  d;        0.0
+    -->
+    <select id="getByCondition" parameterType="user" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        <where>
+            <if test="userName != null and userName !='' ">
+                and userName like concat('%',#{userName},'%')
+            </if>
+            <if test="birthday != null">
+                and birthday like concat('%',#{birthday},'%')
+            </if>
+            <if test="sex != null and sex != '' ">
+                and sex like concat('%',#{sex},'%')
+            </if>
+            <if test="address != null and address != '' ">
+                and address like concat('%',#{address},'%')
+            </if>
+        </where>
+    </select>
+    <!--    ArrayList<User> getByIds(Integer arr[]);-->
+    <select id="getByIds" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        where id in
+        <foreach collection="array" item="id" open="(" close=")" separator=",">
+            #{id}
+        </foreach>
+    </select>
+    <!--根据日期查询用户-->
+    <select id="getByBirthday" resultType="user">
+        select
+        <include refid="columns"></include>
+        from user
+        where birthday between #{arg0} and #{arg1}
+    </select>
+    <!--入参是map-->
+    <select id="getByMap" resultType="user">
+        select <include refid="columns"></include>
+        from user
+        where birthday between #{begin} and #{end}
+     </select>
+    <!--返回一条map-->
+    <select id="getReturnMapOne" resultType="map">
+        select username u,address a
+        from user
+        where id = #{id}
+    </select>
+    <!--返回多个map-->
+    <select id="getMulMap" resultType="map">
+        select username ,address from user
+    </select>
+    <update id="update" parameterType="user">
+        update user
+        set username = #{userName}, birthday = #{birthday}, sex = #{sex}, address = #{address}
+        where id = #{id}
+    </update>
+    <insert id="insert" parameterType="user">
+        <selectKey order="AFTER" keyProperty="id" resultType="int">
+            select LAST_INSERT_ID()
+        </selectKey>
+        insert into user (username,birthday,sex,address) values (#{userName},#{birthday},#{sex},#{address})
+    </insert>
+    <!--批量插入-->
+    <insert id="insertBatch">
+        insert into user (username, birthday, sex, address)
+        VALUES
+        <foreach collection="list" item="u" separator=",">
+            (#{u.userName},#{u.birthday},#{u.sex},#{u.address})
+        </foreach>
+    </insert>
+    <delete id="delete" parameterType="int">
+        delete from user
+        where id = #{id}
+    </delete>
+    <!--批量删除-->
+    <delete id="deleteBatch">
+        delete from user
+        where id in
+        <foreach collection="array" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+    <update id="updateBySet" parameterType="user">
+        update user
+        <set>
+            <if test="userName != null and userName != ''">
+                userName = #{userName},
+            </if>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="sex != null and sex != ''">
+                sex = #{sex},
+            </if>
+            <if test="address != null and address != ''">
+                address = #{address},
+            </if>
+        </set>
+        where id =#{id}
+    </update>
+</mapper>

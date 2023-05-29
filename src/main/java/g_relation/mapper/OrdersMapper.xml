@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="g_relation.mapper.OrdersMapper">
+    <resultMap id="ordersmap" type="orders">
+        <id property="id" column="oid"></id>
+        <result property="orderNumber" column="orderNumber"></result>
+        <result property="orderPrice" column="orderPrice"></result>
+       <association property="customer" javaType="customer">
+           <id property="id" column="cid"></id>
+           <result property="name" column="name"></result>
+           <result property="age" column="age"></result>
+       </association>
+    </resultMap>
+    <select id="getOrderById" parameterType="int" resultMap="ordersmap">
+        select o.id oid,orderPrice,orderNumber,cunsomer_id,c.id cid,name,age from orders o inner join customer c on o.cunsomer_id = c.id
+        where o.id = #{id}
+    </select>
+</mapper>
